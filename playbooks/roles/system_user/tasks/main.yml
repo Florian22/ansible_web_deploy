@@ -1,0 +1,18 @@
+---
+- name: "Create linux service user {{ user }}"
+      when: user is defined 
+      user: {{ user }}
+
+    - name: Add user publicKey
+      when: user is defined
+      authorized_key: 
+        user = {{ user }}
+        key = "{{ lookup('file', '/home/florian/.ssh/id_rsa.pub') }}"
+
+    - name: "Add user {{ user }} as sudoer"
+      when: user is defined
+      template: 
+        src=templates/sudoers.j2
+        dest=/etc/sudoers.d/{{ user }}-sudoer 
+        validate='visudo -cf %s'
+...

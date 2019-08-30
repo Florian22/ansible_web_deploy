@@ -1,0 +1,16 @@
+---
+- name: Install web server
+  hosts: webserver
+  vars:
+    user: ngnix_user
+    domains:
+      - domain: florianbonniec.com
+        git_repo: https://github.com/Florian22/TP2-Florian22.git
+  #remote_user: ubuntu
+
+  #Roles are execute before tasks always
+  roles:
+    - utils
+    - system_user
+    - nginx
+...
