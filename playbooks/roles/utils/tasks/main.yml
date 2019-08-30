@@ -1,7 +1,11 @@
 ---
-- name: Install {{ item }}
+- name: "Install {{ item }}"
     # Works for Ubuntu/Debian apt package manager
-  apt: name= {{ item }} state = latest  update_cache=yes
+  become: yes
+  apt: 
+    name: {{ item }}
+    state: latest
+    update_cache: yes
   with_items:
     - git
 ...
