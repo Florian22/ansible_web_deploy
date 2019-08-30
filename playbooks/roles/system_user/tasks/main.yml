@@ -1,7 +1,7 @@
 ---
 - name: "Create linux service user {{ user }}"
   when: user is defined 
-  user: {{ user }}
+  user: name = {{ user }}
 
 - name: Add user publicKey
   when: user is defined
