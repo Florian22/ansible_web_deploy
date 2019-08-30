@@ -1,5 +1,5 @@
 ---
-- name: "Install {{ item }}"
+- name: "Install "
     # Works for Ubuntu/Debian apt package manager
   become: yes
   apt: 
