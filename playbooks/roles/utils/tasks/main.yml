@@ -1,11 +1,11 @@
 ---
-- name: "Install "
+- name: "Install Git"
     # Works for Ubuntu/Debian apt package manager
   become: yes
   apt: 
-    name: {{ item }}
+    name: git
     state: latest
     update_cache: yes
-  with_items:
-    - git
+#  with_items:
+#    - git
 ...
