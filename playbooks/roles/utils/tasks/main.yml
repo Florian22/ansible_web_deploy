@@ -1,10 +1,7 @@
 ---
 - name: Install {{ item }}
     # Works for Ubuntu/Debian apt package manager
-  apt:
-  name= {{ item }} 
-  stqte = latest
-  update_cache=yes
+  apt: name= {{ item }} state = latest  update_cache=yes
   with_items:
     - git
 ...
