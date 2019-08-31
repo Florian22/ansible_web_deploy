@@ -6,7 +6,7 @@
     user: ngnix_user
     domains:
       - domain: test.florianbonniec.com
-        git_repo: https://github.com/Florian22/TP2-Florian22.git
+        git_repo: https://github.com/Florian22/cheap_website.git
   #remote_user: ubuntu
 
   #Roles are execute before tasks always
