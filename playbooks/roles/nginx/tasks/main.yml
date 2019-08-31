@@ -20,6 +20,6 @@
   notify: nginx reload
 
 - name: Configuration web site
-  include: ./roles/nginx/tasks/site.yml
+  include: ./roles/nginx/tasks/sites.yml
   with_items: domains
 ...
