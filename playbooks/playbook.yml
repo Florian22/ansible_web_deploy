@@ -15,4 +15,5 @@
     - system_user
     - nginx
     - cerbot
+    - openvpn
 ...
