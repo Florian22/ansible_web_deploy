@@ -1,4 +1,6 @@
 ---
+EASY_RSA_Link: "https://github.com/OpenVPN/easy-rsa/releases/download/v3.0.4/EasyRSA-3.0.4.tgz"
+#Easy RSA variavles
 EASYRSA_REQ_NAME: "OpenVPN Certificates"
 EASYRSA_REQ_COUNTRY: "CA"
 EASYRSA_REQ_PROVINCE: "Quebec"
