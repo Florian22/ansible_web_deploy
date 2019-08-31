@@ -16,7 +16,7 @@ server {
     error_log /var/log/nginx/error.log;
     root /var/www/{{ item.domain }};
 
-    index home.html index.html
+    index home.html index.html;
 
     listen 443 ssl; # managed by Certbot
     ssl_certificate /etc/letsencrypt/live/{{ item.domain }}/fullchain.pem; # managed by Certbot
