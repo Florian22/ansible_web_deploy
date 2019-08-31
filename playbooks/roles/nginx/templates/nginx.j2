@@ -8,5 +8,5 @@ server{
         listen 80;
         server_name {{ item.domain }};
         root /var/www/{{ item.domain }};
-        index home.html;
+        index home.html index.html;
 }

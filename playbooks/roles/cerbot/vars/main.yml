@@ -1,0 +1,7 @@
+# Variables for Role Certbot certs.
+certbot_create_if_missing: false
+certbot_create_method: standalone
+certbot_admin_email: florian.bonniec22@gmail.com
+
+certbot_impacted_services:
+  - nginx
