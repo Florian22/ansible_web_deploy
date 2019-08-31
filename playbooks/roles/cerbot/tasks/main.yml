@@ -32,7 +32,7 @@
   become: true
   shell: "certbot certonly --standalone --noninteractive --agree-tos --email {{ certbot_admin_email }} -d {{ item.item.domain }}"
   with_items: "{{ letsencrypt_cert.results }}"
-  when: item.stat.exists == False
+  #when: item.stat.exists == False
 
   #Start services
 - name: Start services after cert has been generated.
