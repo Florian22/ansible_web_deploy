@@ -14,7 +14,8 @@
   when: item.git_repo is defined
   git: 
     dest: /home/{{ user }}/{{ item.domain }}
-    clone: yes 
+    clone: yes
+    force: yes
     repo: "{{ item.git_repo }}"
 
 - name: Simbolic link to www
