@@ -30,9 +30,15 @@
 
 - name: Generate new certificate if one doesn't exist.
   become: true
-  shell: "certbot --standalone --noninteractive --agree-tos --email {{ certbot_admin_email }} -d {{ item.item.domain }}"
+  shell: "certbot certonly --standalone --noninteractive --agree-tos --email {{ certbot_admin_email }} -d {{ item.item.domain }}"
   with_items: "{{ letsencrypt_cert.results }}"
-  #when: item.stat.exists == False
+  when: item.stat.exists == False
+
+  - name: "Creation of nginx configuration for {{ item.item.domain }}"
+    template:
+      src: templates/nginx_ssl.j2
+      dest: /etc/nginx/sites-available/{{ item.item.domain }}
+      force: yes
 
   #Start services
 - name: Start services after cert has been generated.
