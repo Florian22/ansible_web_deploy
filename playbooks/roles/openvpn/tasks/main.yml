@@ -14,13 +14,13 @@
     - easy-rsa
 
 #Clear older certificates
-- name: "Remove CA directory"
+- name: "Remove CA directory {{ ansible_env.HOME }}"
   become: yes
   file:
     state: absent
     path: "{{ ansible_env.HOME }}/openvpn-ca/"
 
-- name: "Create CA dir"
+- name: "Create CA dir {{ ansible_env.HOME }}"
   become: yes
   command: make-cadir {{ ansible_env.HOME }}/openvpn-ca
 
