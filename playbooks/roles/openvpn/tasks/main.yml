@@ -12,7 +12,7 @@
     - openvpn
     - openssl
  #https://docs.ansible.com/ansible/latest/modules/get_url_module.html?highlight=get_url 
-- name: Download eazy-rsa
+- name: "Download eazy-rsa from {{ EASY_RSA_Link }}"
   become: yes
   get_url: 
     dest: /home/{{ user }}/eazy-rsa/eazy-rsa.tgz
