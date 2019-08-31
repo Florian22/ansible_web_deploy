@@ -5,7 +5,7 @@
   vars:
     user: ngnix_user
     domains:
-      - domain: florianbonniec.com
+      - domain: test.florianbonniec.com
         git_repo: https://github.com/Florian22/TP2-Florian22.git
   #remote_user: ubuntu
 
