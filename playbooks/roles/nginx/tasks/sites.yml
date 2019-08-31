@@ -3,32 +3,38 @@
 - name: "Create {{ item.domain }} folder"
   become: yes
   when: item.git_repo is undefined
-  file: path=/home/{{ user }}/{{ item.domain }} state = directory owner = {{ user }}
+  file:
+    path: /home/{{ user }}/{{ item.domain }} 
+    state: directory 
+    owner: "{{ user }}"
 
 #If repository we create a clone the repository
 - name: "Clone {{ item.domain }} repository from {{ item.git_repo }}"
   become: yes
   when: item.git_repo is difined
-  git: dest=/home/{{ user }}/{{ item.domain }} clone = yes repo = {{ item.git_repo }}
+  git: 
+    dest: /home/{{ user }}/{{ item.domain }}
+    clone: yes 
+    repo: {{ item.git_repo }}
 
 - name: Simbolic link to www
   become: yes
   file:
-    src = /home/{{ user }}/{{ item.domain }}
-    dest = /var/www/{{ item.domain }}
-    state = link
+    src: /home/{{ user }}/{{ item.domain }}
+    dest: /var/www/{{ item.domain }}
+    state: link
 
 - name: "Creation of nginx configuration for {{ item.domain }}"
   template:
-    src = templates/nginx.j2
-    dest = /etc/nginx/sites-available/{{ item.domain }}
-    force = yes
+    src: templates/nginx.j2
+    dest: /etc/nginx/sites-available/{{ item.domain }}
+    force: yes
   notify: nginx reload 
 
-- name: Activate {{ item.domain }}
+- name: "Activate {{ item.domain }}"
   file:
-    src = /etc/nginx/sites-available/{{ item.domain }}
-    dest = /etc/nginx/sites-enabled/{{ item.domain }}
-    state = link
+    src: /etc/nginx/sites-available/{{ item.domain }}
+    dest:  /etc/nginx/sites-enabled/{{ item.domain }}
+    state: link
   notify: nginx reload
 ...
