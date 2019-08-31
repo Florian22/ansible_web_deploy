@@ -1,0 +1,9 @@
+---
+EASYRSA_REQ_NAME: "OpenVPN Certificates"
+EASYRSA_REQ_COUNTRY: "CA"
+EASYRSA_REQ_PROVINCE: "Quebec"
+EASYRSA_REQ_CITY: "Montreal"
+EASYRSA_REQ_ORG: "FlorianBonniec"
+EASYRSA_REQ_EMAIL: "florian.bonniec22@gmail.com"
+EASYRSA_REQ_OU: "FlorianBonniec"
+...
