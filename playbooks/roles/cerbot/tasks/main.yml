@@ -34,11 +34,11 @@
   with_items: "{{ letsencrypt_cert.results }}"
   when: item.stat.exists == False
 
-  - name: "Creation of nginx configuration for {{ item.item.domain }}"
-    template:
-      src: templates/nginx_ssl.j2
-      dest: /etc/nginx/sites-available/{{ item.item.domain }}
-      force: yes
+- name: "Creation of nginx configuration for {{ item.item.domain }}"
+  template:
+    src: templates/nginx_ssl.j2
+    dest: /etc/nginx/sites-available/{{ item.item.domain }}
+    force: yes
 
   #Start services
 - name: Start services after cert has been generated.
