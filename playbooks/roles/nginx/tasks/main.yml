@@ -19,7 +19,7 @@
     state: absent
   notify: nginx reload
 
-- name: COnfiguration web site
-  include: site.yml
+- name: Configuration web site
+  include: ./roles/nginx/tasks/site.yml
   with_items: domains
 ...
