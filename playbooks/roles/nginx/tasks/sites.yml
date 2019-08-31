@@ -11,7 +11,7 @@
 #If repository we create a clone the repository
 - name: "Clone {{ item.domain }} repository from {{ item.git_repo }}"
   become: yes
-  when: item.git_repo is difined
+  when: item.git_repo is defined
   git: 
     dest: /home/{{ user }}/{{ item.domain }}
     clone: yes 
