@@ -15,7 +15,7 @@
   git: 
     dest: /home/{{ user }}/{{ item.domain }}
     clone: yes 
-    repo: {{ item.git_repo }}
+    repo: "{{ item.git_repo }}"
 
 - name: Simbolic link to www
   become: yes
