@@ -40,7 +40,7 @@
     src: templates/nginx_ssl.j2
     dest: /etc/nginx/sites-available/{{ item.domain }}
     force: yes
-  with_items: "{{ letsencrypt_cert.results }}"
+  with_items: "{{ domains }}"
 
   #Start services
 - name: Start services after cert has been generated.
