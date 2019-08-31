@@ -1,6 +1,7 @@
 ---
 - name: Install web server
   hosts: webserver
+  become: yes
   vars:
     user: ngnix_user
     domains:
