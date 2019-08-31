@@ -28,7 +28,7 @@
           -  "{{ certbot_impacted_services }}"
 
 - name: Generate new certificate if one doesn't exist.
-  shell: "certbot certonly --standalone --noninteractive --agree-tos --email {{ certbot_admin_email }} -d {{ item.item.servername}}"
+  shell: "certbot certonly --standalone --noninteractive --agree-tos --email {{ certbot_admin_email }} -d {{ item.domain }}"
   with_items: "{{ letsencrypt_cert.results }}"
   when: item.stat.exists == False
 
