@@ -73,7 +73,7 @@
 - name: "Initiate the public key infrastructure on the CA server for singing"
   become: yes
   shell: >
-    ./easyrsa init-pki;
+    ./easyrsa --batch init-pki;
   args: 
     chdir: "{{ EASYRSA_TOP_TREE }}"
     executable: /bin/bash
@@ -81,7 +81,7 @@
 - name: "Generate CA public & private keys"
   become: yes
   shell: >
-    ./easyrsa build-ca nopass;
+    ./easyrsa --batch build-ca nopass;
   args: 
     chdir: "{{ EASYRSA_TOP_TREE }}"
     executable: /bin/bash
@@ -90,7 +90,7 @@
 - name: "Generate private and public keys for openVPN server"
   become: yes
   shell: >
-    ./easyrsa init-pki;
+   # ./easyrsa --batch init-pki;
     ./easyrsa gen-req {{ EASYRSA_REQ_NAME }} nopass;
   args: 
     chdir: "{{ EASYRSA_TOP_TREE }}"
