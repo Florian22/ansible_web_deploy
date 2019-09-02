@@ -91,7 +91,7 @@
   become: yes
   shell: >
    # ./easyrsa --batch init-pki;
-    ./easyrsa gen-req {{ EASYRSA_REQ_NAME }} nopass;
+    ./easyrsa --batch gen-req {{ EASYRSA_REQ_NAME }} nopass;
   args: 
     chdir: "{{ EASYRSA_TOP_TREE }}"
     executable: /bin/bash
