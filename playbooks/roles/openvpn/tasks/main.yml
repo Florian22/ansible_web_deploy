@@ -143,8 +143,8 @@
 
 - name: "Copy ta.key & dh.pem to openvpn"
   become: yes
-  remote_src: yes
   copy:
+  remote_src: yes
     src: "{{ EASYRSA_TOP_TREE }}/{{ item }}"
     dest: "/etc/openvpn/"
   with_items:
