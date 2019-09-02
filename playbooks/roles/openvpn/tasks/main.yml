@@ -126,11 +126,15 @@
     - "ta.key"
     - "dh2048.pem"
 
+#- name: "Generate server.conf from sample config"
+#  become: yes
+#  unarchive:
+#    src: /usr/share/doc/openvpn/examples/sample-config-files/server.conf.gz 
+#    dest: /etc/openvpn/{{ EASYRSA_REQ_NAME }}.conf
 - name: "Generate server.conf from sample config"
   become: yes
-  unarchive:
-    src: /usr/share/doc/openvpn/examples/sample-config-files/server.conf.gz 
-    dest: /etc/openvpn/{{ EASYRSA_REQ_NAME }}.conf
+  shell: >
+     gzip -d -c /usr/share/doc/openvpn/examples/sample-config-files/server.conf.gz | sudo tee /etc/openvpn/{{ EASYRSA_REQ_NAME }}.conf > /dev/null
 
 #Check if not working 12:32
 #Can use template
