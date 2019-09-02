@@ -48,7 +48,7 @@
 #Custom easy-rsa configuration
 - name: Customize CA variable configuration
   lineinfile:
-    dest: {{ EASYRSA_TOP_TREE }}/vars
+    dest: "{{ EASYRSA_TOP_TREE }}"/vars
     regexp: "^{{ item.propert y | regex_escape() }}="
     line: "{{ item.property }}={{ item.value }}"
   with_items:
