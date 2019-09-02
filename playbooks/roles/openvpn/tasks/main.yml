@@ -62,6 +62,14 @@
 #  file:
 #    path: /home/{{ user }}/EasyRSA-3.0.6/vars
 #    state: file
+
+- name: "Create tmp directory"
+  become: yes
+  file:
+    state: directory
+    path: "{{ EASYRSA_TOP_TREE}}/tmp"
+    mode: 0700
+
 ##Use later for signning
 - name: Create easy-rsa var file
   become: yes
@@ -105,11 +113,29 @@
   with_items:
     - "{{ EASYRSA_REQ_NAME }}.key"
 
+- name: "Copy keys to tmp"
+  become: yes
+  copy:
+    remote_src: yes
+    src: "{{ EASYRSA_TOP_TREE }}/pki/{{ item }}"
+    dest: "{{ EASYRSA_TOP_TREE }}/tmp/"
+  with_items:
+    - "reqs/{{ EASYRSA_REQ_NAME }}.req"
+
+- name: "Remove dulicate file"
+  become: yes
+  file:
+    path: "{{ EASYRSA_TOP_TREE }}/pki/{{ item }}"
+    state: abscent
+  with_items:
+    - "reqs/{{ EASYRSA_REQ_NAME }}.req"
+  
+
 - name: "Sign cert"
   become: yes
   shell: >
-    ./easyrsa --batch import-req {{ EASYRSA_TOP_TREE }}/pki/reqs/{{ EASYRSA_REQ_NAME }}.req {{ EASYRSA_REQ_NAME }};
-    ./easyrsa  --batch sign-req {{ EASYRSA_REQ_NAME }} {{ EASYRSA_REQ_NAME }};
+    ./easyrsa --batch import-req {{ EASYRSA_TOP_TREE }}/tmp/{{ EASYRSA_REQ_NAME }}.req {{ EASYRSA_REQ_NAME }};
+    ./easyrsa  --batch sign-req client {{ EASYRSA_REQ_NAME }};
   args: 
     chdir: "{{ EASYRSA_TOP_TREE }}"
     executable: /bin/bash
