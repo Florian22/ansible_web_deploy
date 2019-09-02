@@ -95,7 +95,7 @@
 
 ##Generate for client maybe do it later
 ## Variabilise client1
-name: "Client conf"
+- name: "Client conf"
   become: yes
   shell: >
     source vars;
