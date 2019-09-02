@@ -163,7 +163,7 @@
 - name: "Generate client keys"
   become: yes
   shell: >
-    ./easyrsa gen-req client1 nopass
+    ./easyrsa --batch gen-req client1 nopass
   args: 
     chdir: "{{ EASYRSA_TOP_TREE }}"
     executable: /bin/bash
