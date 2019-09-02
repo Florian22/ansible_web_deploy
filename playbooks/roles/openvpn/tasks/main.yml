@@ -72,6 +72,14 @@
     - { property: 'export KEY_OU', value: "{{ EASYRSA_REQ_OU }}" }
     - { property: 'export KEY_DIR', value: "{{ EASYRSA_TOP_TREE }}/keys" }
 
+#Fix .rnd error
+- name: Fix .rnd error
+  become: yes
+  file:
+    path: /home/{{ user }}/.rnd
+    owner: "{{ user }}"
+
+
 #Source vars 4:47
 - name: "Build the certificate authority"
   become: yes
