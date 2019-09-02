@@ -11,9 +11,9 @@
 
   #Roles are execute before tasks always
   roles:
-    - utils
-    - system_user
-    - nginx
-    - cerbot
+    #- utils
+    #- system_user
+    #- nginx
+    #- cerbot
     - openvpn
 ...

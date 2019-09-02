@@ -59,13 +59,6 @@
 ##Use later for signning
 - name: Create easy-rsa var file
   become: yes
-  copy:
-    src: /home/{{ user }}/EasyRSA-3.0.6/vars.example
-    dest: /home/{{ user }}/EasyRSA-3.0.6/vars
-
-#Can use template
-- name: Create easy-rsa var file
-  become: yes
   template:
     src: templates/vars.j2
     dest:  /home/{{ user }}/EasyRSA-3.0.6/vars
