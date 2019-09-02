@@ -73,11 +73,12 @@
     - { property: 'export KEY_DIR', value: "{{ EASYRSA_TOP_TREE }}/keys" }
 
 #Fix .rnd error
-- name: Fix .rnd error
-  become: yes
-  file:
-    path: /home/{{ user }}/.rnd
-    owner: "{{ user }}"
+# file path /root/.rnd
+#- name: Fix .rnd error
+#  become: yes
+#  file:
+#    path: /root/.rnd
+#    owner: "{{ user }}"
 
 
 #Source vars 4:47
