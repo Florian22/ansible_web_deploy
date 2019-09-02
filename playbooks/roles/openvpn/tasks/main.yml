@@ -10,6 +10,7 @@
     state: latest
   with_items:
     - openvpn
+    - openssl
     #- easy-rsa
 
 #- name: "Remove CA directory"
