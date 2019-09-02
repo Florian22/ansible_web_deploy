@@ -172,7 +172,7 @@
   become: yes
   copy:
     remote_src: yes
-    src: "{{ EASYRSA_TOP_TREE }}/pki/{{ item }}"
+    src: "{{ EASYRSA_TOP_TREE }}/pki/private/{{ item }}"
     dest: "/home/{{ user }}/client-configs/keys"
   with_items:
     - "client1.key"
