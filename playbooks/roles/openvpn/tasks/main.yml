@@ -99,6 +99,7 @@
 - name: "Copy keys to /etc/openvpn server ??"
   become: yes
   copy:
+    remote_src: yes
     src: "{{ EASYRSA_TOP_TREE }}/pki/private/{{ item }}"
     dest: "/etc/openvpn/"
   with_items:
