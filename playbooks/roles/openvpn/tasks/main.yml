@@ -58,7 +58,7 @@
 - name: Customize CA variable configuration
   lineinfile:
     dest: "{{ EASYRSA_TOP_TREE }}/vars"
-    regexp: "^{{ item.propert | regex_escape() }}="
+    regexp: "^{{ item.property | regex_escape() }}="
     line: "{{ item.property }}={{ item.value }}"
   with_items:
     - { property: 'export EASY_RSA', value: "{{ EASYRSA_TOP_TREE }}" }
