@@ -31,7 +31,7 @@
 - name: "Download eazy-rsa from {{ EASY_RSA_Link }}"
   become: yes
   get_url: 
-    dest: /home/{{ user }}/eazy-rsa.tgz
+    dest: /home/{{ user }}/easy-rsa.tgz
     force: yes
     url: "{{ EASY_RSA_Link }}"
 
@@ -39,14 +39,14 @@
 - name: Extract eazy-rsa
   become: yes
   unarchive:
-    src: /home/{{ user }}/eazy-rsa.tgz
+    src: /home/{{ user }}/easy-rsa.tgz
     dest: /home/{{ user }}/
 
 
 - name: Remove easy-rsa archive
   become: yes
   file:
-    path: /home/{{ user }}/eazy-rsa.tgz
+    path: /home/{{ user }}/easy-rsa.tgz
     state: absent
 
 ##Use later for signning
