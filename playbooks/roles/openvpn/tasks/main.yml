@@ -38,6 +38,7 @@
 # https://docs.ansible.com/ansible/latest/modules/unarchive_module.html
 - name: Extract eazy-rsa
   become: yes
+  become_user: "{{ user }}"
   unarchive:
     src: /home/{{ user }}/easy-rsa.tgz
     dest: /home/{{ user }}/
