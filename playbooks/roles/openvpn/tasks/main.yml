@@ -60,8 +60,8 @@
 - name: Create easy-rsa var file
   become: yes
   copy:
-    src: /home/{{ user }}/EasyRSA-3.0.4/vars.example
-    dest: /home/{{ user }}/EasyRSA-3.0.4/vars
+    src: /home/{{ user }}/EasyRSA-3.0.6/vars.example
+    dest: /home/{{ user }}/EasyRSA-3.0.6/vars
 
 #Custom easy-rsa configuration
 #Use template TODO
