@@ -208,16 +208,16 @@
   become: yes
   shell: "{{ item }}"
   with_items:
-    - echo -e '<ca>' >> /home/{{ user }}/client-configs/sample.conf/client1.ovpn
-    - cat {{ EASYRSA_TOP_TREE }}/keys/ca.crt >> /home/{{ user }}/client-configs/sample.conf/client1.ovpn
-    - echo -e '</ca>\n<cert>' >> /home/{{ user }}/client-configs/sample.conf/client1.ovpn
-    - cat {{ EASYRSA_TOP_TREE }}/keys/client1.crt >> /home/{{ user }}/client-configs/sample.conf/client1.ovpn
-    - echo -e '</cert>\n<key>' >> /home/{{ user }}/client-configs/sample.conf/client1.ovpn
-    - cat {{ EASYRSA_TOP_TREE }}/keys/client1.key >> /home/{{ user }}/client-configs/sample.conf/client1.ovpn
-    - echo -e '</key>\n<tls-auth>' >> /home/{{ user }}/client-configs/sample.conf/client1.ovpn
-    - cat {{ EASYRSA_TOP_TREE }}/keys/ta.key >> /home/{{ user }}/client-configs/sample.conf/client1.ovpn
-    - echo -e '</tls-auth>' >> /home/{{ user }}/client-configs/sample.conf/client1.ovpn
-    - echo -e 'key-direction 1' >> /home/{{ user }}/client-configs/sample.conf/client1.ovpn
+    - echo -e '<ca>' >> /home/{{ user }}/client-configs/files/client1.ovpn
+    - cat {{ EASYRSA_TOP_TREE }}/keys/ca.crt >> /home/{{ user }}/client-configs/files/client1.ovpn
+    - echo -e '</ca>\n<cert>' >> /home/{{ user }}/client-configs/files/client1.ovpn
+    - cat {{ EASYRSA_TOP_TREE }}/keys/client1.crt >> /home/{{ user }}/client-configs/files/client1.ovpn
+    - echo -e '</cert>\n<key>' >> /home/{{ user }}/client-configs/files/client1.ovpn
+    - cat {{ EASYRSA_TOP_TREE }}/keys/client1.key >> /home/{{ user }}/client-configs/files/client1.ovpn
+    - echo -e '</key>\n<tls-auth>' >> /home/{{ user }}/client-configs/files/client1.ovpn
+    - cat {{ EASYRSA_TOP_TREE }}/keys/ta.key >> /home/{{ user }}/client-configs/files/client1.ovpn
+    - echo -e '</tls-auth>' >> /home/{{ user }}/client-configs/files/client1.ovpn
+    - echo -e 'key-direction 1' >> /home/{{ user }}/client-configs/files/client1.ovpn
   args:
     chdir: "/home/{{ user }}/client-configs/files/"
     executable: /bin/bash
