@@ -117,6 +117,7 @@
 - name: "Copy crt server openvpn"
   become: yes
   copy:
+    remote_src: yes
     src: "{{ EASYRSA_TOP_TREE }}/pki/issued/{{ item }}"
     dest: "/etc/openvpn/"
   with_items:
@@ -125,6 +126,7 @@
 - name: "Copy ca server openvpn"
   become: yes
   copy:
+    remote_src: yes
     src: "{{ EASYRSA_TOP_TREE }}/pki/{{ item }}"
     dest: "/etc/openvpn/"
   with_items:
@@ -141,6 +143,7 @@
 
 - name: "Copy ta.key & dh.pem to openvpn"
   become: yes
+  remote_src: yes
   copy:
     src: "{{ EASYRSA_TOP_TREE }}/{{ item }}"
     dest: "/etc/openvpn/"
@@ -168,6 +171,7 @@
 - name: "Copy key to client folder"
   become: yes
   copy:
+    remote_src: yes
     src: "{{ EASYRSA_TOP_TREE }}/pki/{{ item }}"
     dest: "/home/{{ user }}/client-configs/keys"
   with_items:
@@ -187,6 +191,7 @@
 - name: "Copy signed key to client folder"
   become: yes
   copy:
+    remote_src: yes
     src: "{{ EASYRSA_TOP_TREE }}/pki/issued/{{ item }}"
     dest: "/home/{{ user }}/client-configs/keys"
   with_items:
@@ -195,6 +200,7 @@
 - name: "Copy ta.key to client folder"
   become: yes
   copy:
+    remote_src: yes
     src: "{{ EASYRSA_TOP_TREE }}/{{ item }}"
     dest: "/home/{{ user }}/client-configs/keys"
   with_items:
@@ -203,6 +209,7 @@
 - name: "Copy ca.crt to client folder"
   become: yes
   copy:
+    remote_src: yes
     src: "/etc/openvpn/{{ item }}"
     dest: "/home/{{ user }}/client-configs/keys"
   with_items:
