@@ -53,6 +53,7 @@
 - name: Remove easy-rsa archive
   become: yes
   file:
+    remote_src: yes
     path: /home/{{ user }}/easy-rsa.tgz
     state: absent
 
