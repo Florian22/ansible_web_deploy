@@ -12,6 +12,12 @@
     - openvpn
     - easy-rsa
 
+- name: "Remove CA directory"
+  become: yes
+  file:
+    state: absent
+    path: "{{ EASYRSA_TOP_TREE }}"
+
 - name: Create CA directory
   become: yes
   shell: >
