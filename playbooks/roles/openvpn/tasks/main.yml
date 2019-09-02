@@ -28,7 +28,7 @@
 
 
 #https://docs.ansible.com/ansible/latest/modules/get_url_module.html?highlight=get_url 
-- name: "Download eazy-rsa from {{ EASY_RSA_Link }}"
+- name: "Download easy-rsa from {{ EASY_RSA_Link }}"
   become: yes
   get_url: 
     dest: /home/{{ user }}/easy-rsa.tgz
@@ -42,7 +42,7 @@
     owner: "{{ user }}"
 
 # https://docs.ansible.com/ansible/latest/modules/unarchive_module.html
-- name: Extract eazy-rsa
+- name: Extract easy-rsa
   become: yes
   unarchive:
     remote_src: yes
@@ -55,13 +55,18 @@
   file:
     path: /home/{{ user }}/easy-rsa.tgz
     state: absent
-
+    
+- name: Create var file
+  become: yes
+  file:
+    path: /home/{{ user }}/EasyRSA-3.0.6/vars
+    state: file
 ##Use later for signning
 - name: Create easy-rsa var file
   become: yes
   template:
     src: templates/vars.j2
-    dest:  /home/{{ user }}/EasyRSA-3.0.6/vars
+    dest: /home/{{ user }}/EasyRSA-3.0.6/vars
     force: yes
 
 - name: "Initiate the public key infrastructure on the CA server for singing"
