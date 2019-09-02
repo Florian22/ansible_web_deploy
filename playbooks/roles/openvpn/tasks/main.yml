@@ -55,18 +55,18 @@
   file:
     path: /home/{{ user }}/easy-rsa.tgz
     state: absent
-    
-- name: Create var file
-  become: yes
-  file:
-    path: /home/{{ user }}/EasyRSA-3.0.6/vars
-    state: file
+
+#- name: Create var file
+#  become: yes
+#  file:
+#    path: /home/{{ user }}/EasyRSA-3.0.6/vars
+#    state: file
 ##Use later for signning
 - name: Create easy-rsa var file
   become: yes
   template:
     src: templates/vars.j2
-    dest: /home/{{ user }}/EasyRSA-3.0.6/vars
+    dest: "{{ EASYRSA_TOP_TREE}}/vars"
     force: yes
 
 - name: "Initiate the public key infrastructure on the CA server for singing"
