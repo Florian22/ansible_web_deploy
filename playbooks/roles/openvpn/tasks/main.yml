@@ -10,42 +10,50 @@
     state: present
   with_items:
     - openvpn
-    - openssl
+    - easy-rsa
+
+- name: Create CA directory
+  command: make-cadir {{ EASYRSA_TOP_TREE }}
+  args:
+    creates: {{ EASYRSA_TOP_TREE }}
+
  #https://docs.ansible.com/ansible/latest/modules/get_url_module.html?highlight=get_url 
-- name: "Download eazy-rsa from {{ EASY_RSA_Link }}"
-  become: yes
-  get_url: 
-    dest: /home/{{ user }}/eazy-rsa/eazy-rsa.tgz
-    force: yes
-    url: "{{ EASY_RSA_Link }}"
+#- name: "Download eazy-rsa from {{ EASY_RSA_Link }}"
+#  become: yes
+#  get_url: 
+#    dest: /home/{{ user }}/eazy-rsa/eazy-rsa.tgz
+#    force: yes
+#    url: "{{ EASY_RSA_Link }}"
 
 # https://docs.ansible.com/ansible/latest/modules/unarchive_module.html
-- name: Extract eazy-rsa
-  become: yes
-  unarchive:
-    src: /home/{{ user }}/eazy-rsa/eazy-rsa.tgz
-    dest: /home/{{ user }}/eazy-rsa
+#- name: Extract eazy-rsa
+#  become: yes
+#  unarchive:
+#    src: /home/{{ user }}/eazy-rsa/eazy-rsa.tgz
+#    dest: /home/{{ user }}/eazy-rsa
 
 
-- name: Remove easy-rsa archive
-  become: yes
-  file:
-    path: /home/{{ user }}/eazy-rsa/eazy-rsa.tgz
-    state: absent
+#- name: Remove easy-rsa archive
+#  become: yes
+#  file:
+#    path: /home/{{ user }}/eazy-rsa/eazy-rsa.tgz
+#    state: absent
 
-- name: Create easy-rsa var file
-  become: yes
-  copy:
-    src: /home/{{ user }}/eazy-rsa/vars.example
-    dest: /home/{{ user }}/eazy-rsa/vars
+#- name: Create easy-rsa var file
+#  become: yes
+#  copy:
+#    src: /home/{{ user }}/eazy-rsa/vars.example
+#    dest: /home/{{ user }}/eazy-rsa/vars
 
-  #Custom easy-rsa configuration
+#Custom easy-rsa configuration
 - name: Customize CA variable configuration
   lineinfile:
-    dest: /home/{{ user }}/eazy-rsa/vars
-    regexp: "^{{ item.property | regex_escape() }}="
+    dest: {{ EASYRSA_TOP_TREE }}/vars
+    regexp: "^{{ item.propert y | regex_escape() }}="
     line: "{{ item.property }}={{ item.value }}"
   with_items:
+    - { property: 'export EASY_RSA', value: "{{ EASYRSA_TOP_TREE }}" }
+    - { property: 'export KEY_CONFIG', value: "{{ EASYRSA_KEY_CONFIG }}" }
     - { property: 'export KEY_NAME', value: "{{ EASYRSA_REQ_NAME }}" }
     - { property: 'export KEY_COUNTRY', value: "{{ EASYRSA_REQ_COUNTRY }}" }
     - { property: 'export KEY_PROVINCE', value: "{{ EASYRSA_REQ_PROVINCE }}" }
@@ -55,6 +63,151 @@
     - { property: 'export KEY_OU', value: "{{ EASYRSA_REQ_OU }}" }
     - { property: 'export KEY_DIR', value: '{{ ansible_env.HOME }}/openvpn-ca/keys' }
 
+#Source vars 4:47
+- name: "Build the certificate authority"
+  become: yes
+  shell: >
+    source vars;
+    ./clean-all;
+    yes "" | ./build-ca;
+  args: 
+    chdir: "{{ EASYRSA_TOP_TREE }}"
+    executable: /bin/bash
+
+- name: "Build server certificate/keys"
+  become: yes
+  shell: >
+    source vars;
+    ./build-key-server --batch {{ EASYRSA_REQ_NAME }};
+  args: 
+    chdir: "{{ EASYRSA_TOP_TREE }}"
+    executable: /bin/bash
+
+- name: "Build Diffie-Hellman parameters and key generation"
+  become: yes
+  shell: >
+    source vars;
+    yes "" | ./build-dh;
+    openvpn --genkey --secret keys/ta.key;
+  args: 
+    chdir: "{{ EASYRSA_TOP_TREE }}"
+    executable: /bin/bash
+
+##Generate for client maybe do it later
+## Variabilise client1
+name: "Client conf"
+  become: yes
+  shell: >
+    source vars;
+    yes "" | ./build-key client1;
+  args: 
+    chdir: "{{ EASYRSA_TOP_TREE }}"
+    executable: /bin/bash
+
+- name: "Copy key and certificates to /etc/openvpn server ??"
+  become: yes
+  copy:
+    remote_src: yes
+    src: "{{ EASYRSA_TOP_TREE }}/keys/{{ item }}"
+    dest: "/etc/openvpn/"
+  with_items:
+    - "ca.crt"
+    - "{{ EASYRSA_REQ_NAME }}.crt"
+    - "{{ EASYRSA_REQ_NAME }}.key"
+    - "ta.key"
+    - "dh2048.pem"
+
+- name: "Generate server.conf from sample config"
+  become: yes
+  unarchive:
+    src: /usr/share/doc/openvpn/examples/sample-config-files/server.conf.gz 
+    dest: /etc/openvpn/{{ EASYRSA_REQ_NAME }}.conf
+
+#Check if not working 12:32
+#Can use template
+- name: Adjust OpenVPN server configuration
+  become: yes 
+  lineinfile:
+    dest: "/etc/openvpn/{{ EASYRSA_REQ_NAME }}.conf"
+    regexp: "^{{ item.regex | regex_escape() }}"
+    line: "{{ item.value }}"
+  with_items:
+    - { regex: ';user nobody', value: 'user nobody' }
+    - { regex: ';group nogroup', value: 'group nogroup' }
+    - { regex: ';push "redirect-gateway def1 bypass-dhcp"', value: 'push "redirect-gateway def1 bypass-dhcp"' }
+    - { regex: 'cert server.crt', value: 'cert {{ EASYRSA_REQ_NAME }}.crt' }
+    - { regex: 'key server.key', value: 'key {{ EASYRSA_REQ_NAME }}.key' }
+    - { regex: 'cipher AES-256-CBC', value: 'cipher AES-128-CBC' }
+    - { regex: ';push "dhcp-option DNS 208.67.222.222"', value: 'push "dhcp-option DNS 208.67.222.222"' }
+    - { regex: ';push "dhcp-option DNS 208.67.220.220"', value: 'push "dhcp-option DNS 208.67.220.220"' }
+
+#14:09
+- name: Configuration IP forwarding
+  become: true
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: 1
+    state: present
+
+- name: Start openvpn systemd service
+  become: true
+  systemd:
+    name: openvpn@{{ EASYRSA_REQ_NAME }}
+    state: started
+    daemon_reload: yes
+    enabled: yes
+
+#Create client config folder
+- name: Create client configuration folder
+  file:
+    state: directory
+    mode: 0700
+    path: "/home/{{ user }}/client-configs/files"
+
+- name: Create client configuration
+  become: yes
+  copy:
+    remote_src: yes
+    src: "/usr/share/doc/openvpn/examples/sample-config-files/client.conf"
+    dest: "/home/{{ user }}/client-configs/sample.conf"
+
+#TODO Replace ip by variable
+#MAYBE error 256 128
+#22:01
+- name: Adjust OpenVPN client configuration
+  become: yes 
+  lineinfile:
+    dest: "/home/{{ user }}/client-configs/sample.conf"
+    regexp: "^{{ item.regex | regex_escape() }}"
+    line: "{{ item.value }}"
+  with_items:
+    - { regex: ';user nobody', value: 'user nobody' }
+    - { regex: ';group nogroup', value: 'group nogroup' }
+    - { regex: 'remote my-server-1 1194', value: 'remote {{ groups["webserver"][0] }} 1194' }
+    - { regex: 'ca ca.crt', value: ';ca ca.crt' }
+    - { regex: 'cert client.crt', value: ';cert client.crt' }
+    - { regex: 'key client.key', value: ';key client.key' }
+    - { regex: 'cipher AES-256-CBC', value: 'cipher AES-128-CBC' }
+    - { regex: ';push "dhcp-option DNS 208.67.222.222"', value: 'push "dhcp-option DNS 208.67.222.222"' }
+    - { regex: ';push "dhcp-option DNS 208.67.220.220"', value: 'push "dhcp-option DNS 208.67.220.220"' }
+
+- name: "Create client ovpn file"
+  become: yes
+  shell: "{{ item }}"
+  with_items:
+    - echo -e '<ca>' >> /home/{{ user }}/client-configs/sample.conf/client1.ovpn
+    - cat {{ EASYRSA_TOP_TREE }}/keys/ca.crt >> /home/{{ user }}/client-configs/sample.conf/client1.ovpn
+    - echo -e '</ca>\n<cert>' >> /home/{{ user }}/client-configs/sample.conf/client1.ovpn
+    - cat {{ EASYRSA_TOP_TREE }}/keys/client1.crt >> /home/{{ user }}/client-configs/sample.conf/client1.ovpn
+    - echo -e '</cert>\n<key>' >> /home/{{ user }}/client-configs/sample.conf/client1.ovpn
+    - cat {{ EASYRSA_TOP_TREE }}/keys/client1.key >> /home/{{ user }}/client-configs/sample.conf/client1.ovpn
+    - echo -e '</key>\n<tls-auth>' >> /home/{{ user }}/client-configs/sample.conf/client1.ovpn
+    - cat {{ EASYRSA_TOP_TREE }}/keys/ta.key >> /home/{{ user }}/client-configs/sample.conf/client1.ovpn
+    - echo -e '</tls-auth>' >> /home/{{ user }}/client-configs/sample.conf/client1.ovpn
+    - echo -e 'key-direction 1' >> /home/{{ user }}/client-configs/sample.conf/client1.ovpn
+  args:
+    chdir: "/home/{{ user }}/client-configs/files/"
+    executable: /bin/bash
 
 #Start openvpn servce
 #- name: Start openvpn service
