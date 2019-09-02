@@ -7,7 +7,7 @@
 - name: Install openvpn & dependencies
   package:
     name: "{{ item }}"
-    state: present
+    state: latest
   with_items:
     - openvpn
     - easy-rsa
