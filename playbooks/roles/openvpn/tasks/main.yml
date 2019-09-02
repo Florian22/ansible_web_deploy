@@ -53,7 +53,6 @@
 - name: Remove easy-rsa archive
   become: yes
   file:
-    remote_src: yes
     path: /home/{{ user }}/easy-rsa.tgz
     state: absent
 
@@ -64,24 +63,13 @@
     src: /home/{{ user }}/EasyRSA-3.0.6/vars.example
     dest: /home/{{ user }}/EasyRSA-3.0.6/vars
 
-#Custom easy-rsa configuration
-#Use template TODO
-- name: Customize CA variable configuration
-  lineinfile:
-    dest: "{{ EASYRSA_TOP_TREE }}/vars"
-    regexp: "^{{ item.regex | regex_escape() }}"
-    line: "{{ item.value }}"
-  with_items:
-    #- { regex: 'export EASY_RSA', value: "{{ EASYRSA_TOP_TREE }}" }
-    #- { regex: 'export KEY_CONFIG', value: "{{ EASYRSA_KEY_CONFIG }}" }
-    #- { regex: 'export KEY_NAME', value: "{{ EASYRSA_REQ_NAME }}" }
-    - { regex: '#set_var EASYRSA_REQ_COUNTRY	"US"', value: "set_var EASYRSA_REQ_COUNTRY	{{ EASYRSA_REQ_COUNTRY }}" }
-    - { regex: '#set_var EASYRSA_REQ_PROVINCE	"California"', value: "#set_var EASYRSA_REQ_PROVINCE {{ EASYRSA_REQ_PROVINCE }}" }
-    - { regex: '#set_var EASYRSA_REQ_CITY	"San Francisco"', value: "#set_var EASYRSA_REQ_CITY {{ EASYRSA_REQ_CITY }}" }
-    - { regex: '#set_var EASYRSA_REQ_ORG	"Copyleft Certificate Co"', value: "#set_var EASYRSA_REQ_ORG	{{ EASYRSA_REQ_ORG }}" }
-    - { regex: '#set_var EASYRSA_REQ_EMAIL	"me@example.net"', value: "#set_var EASYRSA_REQ_EMAIL	{{ EASYRSA_REQ_EMAIL }}" }
-    - { regex: '#set_var EASYRSA_REQ_OU		"My Organizational Unit"', value: "#set_var EASYRSA_REQ_OU {{ EASYRSA_REQ_OU }}" }
-    #- { regex: 'export KEY_DIR', value: "{{ EASYRSA_TOP_TREE }}/keys" }
+#Can use template
+- name: Create easy-rsa var file
+  become: yes
+  template:
+    src: templates/vars.j2
+    dest:  /home/{{ user }}/EasyRSA-3.0.6/vars
+    force: yes
 
 - name: "Initiate the public key infrastructure on the CA server for singing"
   become: yes
