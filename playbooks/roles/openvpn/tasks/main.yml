@@ -147,6 +147,7 @@
   file:
     path: "{{ EASYRSA_CA_TOP_TREE }}/pki/{{ item }}"
     mode: 0777
+    owner: florian
   with_items:
     - "issued/{{ EASYRSA_REQ_NAME }}.crt"
     - "ca.crt"
