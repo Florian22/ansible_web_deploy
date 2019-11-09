@@ -13,21 +13,6 @@
     - openssl
     #- easy-rsa
 
-#- name: "Remove CA directory"
-#  become: yes
-#  file:
-#    state: absent
-#    path: "{{ EASYRSA_TOP_TREE }}"
-
-#- name: Create CA directory
-#  become: yes
-#  shell: >
-#    make-cadir {{ EASYRSA_TOP_TREE }};
-#  args: 
-#    chdir: "/"
-#    executable: /bin/bash
-
-
 #https://docs.ansible.com/ansible/latest/modules/get_url_module.html?highlight=get_url 
 - name: "Download easy-rsa from {{ EASY_RSA_Link }}"
   become: yes
@@ -42,14 +27,21 @@
     path: /home/{{ user }}/easy-rsa.tgz
     owner: "{{ user }}"
 
+#######
+
 # https://docs.ansible.com/ansible/latest/modules/unarchive_module.html
-- name: Extract easy-rsa
+- name: Extract easy-rsa for open vpn server
   become: yes
   unarchive:
     remote_src: yes
     src: /home/{{ user }}/easy-rsa.tgz
     dest: /home/{{ user }}/
 
+#- name: Extract easy-rsa for CA Authority
+#  copy:
+#    remote_src: yes
+#    src: "{{ EASYRSA_TOP_TREE}}"
+#    dest: "{{ EASYRSA_CA_TOP_TREE }}"
 
 - name: Remove easy-rsa archive
   become: yes
@@ -57,54 +49,42 @@
     path: /home/{{ user }}/easy-rsa.tgz
     state: absent
 
-#- name: Create var file
-#  become: yes
-#  file:
-#    path: /home/{{ user }}/EasyRSA-3.0.6/vars
-#    state: file
-
-- name: "Create tmp directory"
-  become: yes
-  file:
-    state: directory
-    path: "{{ EASYRSA_TOP_TREE}}/tmp"
-    mode: 0700
 
 ##Use later for signning
-- name: Create easy-rsa var file
-  become: yes
-  template:
-    src: templates/vars.j2
-    dest: "{{ EASYRSA_TOP_TREE}}/vars"
-    force: yes
+#- name: Create easy-rsa var file
+#  become: yes
+#  template:
+#    src: templates/vars.j2
+#    dest: "{{ EASYRSA_TOP_TREE}}/vars"
+#    force: yes
 
-- name: "Initiate the public key infrastructure on the CA server for singing"
+#- name: "Initiate the public key infrastructure on the CA server for singing"
+#  become: yes
+#  shell: >
+#    ./easyrsa --batch init-pki;
+#  args: 
+#    chdir: "{{ EASYRSA_TOP_TREE }}"
+#    executable: /bin/bash
+
+#- name: "Generate CA public & private keys"
+#  become: yes
+#  shell: >
+#    ./easyrsa --batch build-ca nopass;
+#  args: 
+#    chdir: "{{ EASYRSA_TOP_TREE }}"
+#    executable: /bin/bash
+##End signing part
+
+- name: "Generate private keys for openVPN server and certificate request .req"
   become: yes
   shell: >
     ./easyrsa --batch init-pki;
-  args: 
-    chdir: "{{ EASYRSA_TOP_TREE }}"
-    executable: /bin/bash
-
-- name: "Generate CA public & private keys"
-  become: yes
-  shell: >
-    ./easyrsa --batch build-ca nopass;
-  args: 
-    chdir: "{{ EASYRSA_TOP_TREE }}"
-    executable: /bin/bash
-
-##End signing part
-- name: "Generate private and public keys for openVPN server"
-  become: yes
-  shell: >
-   # ./easyrsa --batch init-pki;
     ./easyrsa --batch gen-req {{ EASYRSA_REQ_NAME }} nopass;
   args: 
     chdir: "{{ EASYRSA_TOP_TREE }}"
     executable: /bin/bash
 
-- name: "Copy keys to /etc/openvpn server ??"
+- name: "Copy keys to /etc/openvpn server"
   become: yes
   copy:
     remote_src: yes
@@ -113,50 +93,58 @@
   with_items:
     - "{{ EASYRSA_REQ_NAME }}.key"
 
-- name: "Copy keys to tmp"
+    
+- name: "Fetch server.req to tmp of CA authority"
   become: yes
-  copy:
-    remote_src: yes
+  fetch:
+#    remote_src: yes
     src: "{{ EASYRSA_TOP_TREE }}/pki/{{ item }}"
-    dest: "{{ EASYRSA_TOP_TREE }}/tmp/"
+    dest: "/tmp/"
   with_items:
     - "reqs/{{ EASYRSA_REQ_NAME }}.req"
 
-- name: "Remove dulicate file"
-  become: yes
-  file:
-    path: "{{ EASYRSA_TOP_TREE }}/pki/{{ item }}"
-    state: absent
-  with_items:
-    - "reqs/{{ EASYRSA_REQ_NAME }}.req"
-  
+#- name: "Remove duplicate file"
+#  become: yes
+#  file:
+#    path: "{{ EASYRSA_TOP_TREE }}/pki/{{ item }}"
+#    state: absent
+#  with_items:
+#    - "reqs/{{ EASYRSA_REQ_NAME }}.req"
 
+#FBO
+#Next, on your CA machine, navigate to the EasyRSA directory:
+######################
+#Execute on local machine
 - name: "Sign cert"
   become: yes
-  shell: >
-    ./easyrsa --batch import-req {{ EASYRSA_TOP_TREE }}/tmp/{{ EASYRSA_REQ_NAME }}.req {{ EASYRSA_REQ_NAME }};
-    ./easyrsa  --batch sign-req client {{ EASYRSA_REQ_NAME }};
-  args: 
-    chdir: "{{ EASYRSA_TOP_TREE }}"
-    executable: /bin/bash
+  local_action:
+    shell: >
+      ./easyrsa --batch import-req /tmp/{{ EASYRSA_REQ_NAME }}.req {{ EASYRSA_REQ_NAME }};
+      ./easyrsa  --batch sign-req {{ EASYRSA_REQ_NAME }} {{ EASYRSA_REQ_NAME }};
+    args: 
+      chdir: "{{ EASYRSA_CA_TOP_TREE }}"
+      executable: /bin/bash
+################End exec local
+
 
 - name: "Copy crt server openvpn"
   become: yes
   copy:
-    remote_src: yes
-    src: "{{ EASYRSA_TOP_TREE }}/pki/issued/{{ item }}"
-    dest: "/etc/openvpn/"
+    #remote_src: yes
+    src: "{{ EASYRSA_CA_TOP_TREE }}/pki/{{ item }}"
+    dest: "/etc/openvpn"
   with_items:
-    - "{{ EASYRSA_REQ_NAME }}.crt"
-
-- name: "Copy ca server openvpn"
-  become: yes
-  copy:
-    remote_src: yes
-    src: "{{ EASYRSA_TOP_TREE }}/pki/{{ item }}"
-    dest: "/etc/openvpn/"
-  with_items:
+    - "issued/{{ EASYRSA_REQ_NAME }}.crt"
     - "ca.crt"
+
+#- name: "Copy ca server openvpn"
+#  become: yes
+#  copy:
+#    remote_src: yes
+#    src: "{{ EASYRSA_TOP_TREE }}/pki/{{ item }}"
+#    dest: "/etc/openvpn/"
+#  with_items:
+#    - "ca.crt"
   
 - name: "Create a strong Diffie-Hellman key to use during key exchange & TLS"
   become: yes
@@ -177,7 +165,7 @@
     - "ta.key"
     - "pki/dh.pem"
 
-#Generate client keys
+#Step 4 Generate client keys
 
 - name: "Create client config directory"
   become: yes
@@ -186,7 +174,7 @@
     path: "/home/{{ user }}/client-configs/keys"
     mode: 0700
 
-- name: "Generate client keys"
+- name: "Generate client keys and certificate request .req"
   become: yes
   shell: >
     ./easyrsa --batch gen-req client1 nopass
@@ -203,25 +191,45 @@
   with_items:
     - "client1.key"
 
-#Sign client certificate
-- name: "Sign client cert"
+- name: "Fetch server.req to tmp of CA authority"
   become: yes
-  shell: >
-    ./easyrsa --batch import-req {{ EASYRSA_TOP_TREE }}/pki/reqs/client1.req client1;
-    ./easyrsa  --batch sign-req client1 client1;
-  args: 
-    chdir: "{{ EASYRSA_TOP_TREE }}"
-    executable: /bin/bash
+  fetch:
+#    remote_src: yes
+    src: "{{ EASYRSA_TOP_TREE }}/pki/{{ item }}"
+    dest: "/tmp/"
+  with_items:
+    - "reqs/client1.req"
 
-#Copy client signed cert in keys folder
-- name: "Copy signed key to client folder"
+#Execute on local machine
+- name: "Sign cert"
+  become: yes
+  local_action:
+    shell: >
+      ./easyrsa --batch import-req /tmp/client1.req client1;
+      ./easyrsa  --batch sign-req client client1;
+    args: 
+      chdir: "{{ EASYRSA_CA_TOP_TREE }}"
+      executable: /bin/bash
+################End exec local
+
+- name: "Copy crt server openvpn"
   become: yes
   copy:
     remote_src: yes
-    src: "{{ EASYRSA_TOP_TREE }}/pki/issued/{{ item }}"
-    dest: "/home/{{ user }}/client-configs/keys"
+    src: "{{ EASYRSA_CA_TOP_TREE }}/pki/{{ item }}"
+    dest: "/home/{{ user }}/client-configs/keys/"
   with_items:
-    - "client1.crt"
+    - "issued/client1.crt"
+
+#Copy client signed cert in keys folder
+#- name: "Copy signed key to client folder"
+#  become: yes
+#  copy:
+#    remote_src: yes
+#    src: "{{ EASYRSA_TOP_TREE }}/pki/issued/{{ item }}"
+#    dest: "/home/{{ user }}/client-configs/keys"
+#  with_items:
+#    - "client1.crt"
 
 - name: "Copy ta.key to client folder"
   become: yes
@@ -246,6 +254,7 @@
 #  unarchive:
 #    src: /usr/share/doc/openvpn/examples/sample-config-files/server.conf.gz 
 #    dest: /etc/openvpn/{{ EASYRSA_REQ_NAME }}.conf
+# Step 5 — Configuring the OpenVPN Service
 
 - name: "Generate server.conf from sample config"
   become: yes

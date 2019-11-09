@@ -3,6 +3,7 @@ EASY_RSA_Link: "https://github.com/OpenVPN/easy-rsa/releases/download/v3.0.6/Eas
 #Easy RSA variavles
 #EASYRSA_TOP_TREE: /home/{{ user }}/openvpn-ca
 EASYRSA_TOP_TREE: /home/{{ user }}/EasyRSA-v3.0.6
+EASYRSA_CA_TOP_TREE: /opt/ca/EasyRSA-3.0.4
 EASYRSA_KEY_CONFIG: "{{ EASYRSA_TOP_TREE }}/openssl-1.0.0.cnf"
 #Easy RSA CA variavles
 EASYRSA_REQ_NAME: "server"
