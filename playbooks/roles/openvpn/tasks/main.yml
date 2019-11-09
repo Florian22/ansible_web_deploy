@@ -155,7 +155,7 @@
 
 - name: "Copy crt server openvpn"
   become: yes
-  become_user: florian
+  become_user: root
   copy:
     #remote_src: yes
     src: "{{ EASYRSA_CA_TOP_TREE }}/pki/{{ item }}"
