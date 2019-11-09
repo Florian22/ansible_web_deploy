@@ -153,6 +153,27 @@
     - "ca.crt"
   delegate_to: 127.0.0.1
 
+- name: "copy to tmp"
+  become: yes
+  copy:
+    src: "{{ EASYRSA_CA_TOP_TREE }}/pki/{{ item }}"
+    dest: "/tmp/"
+    mode: 0777
+    owner: florian
+  with_items:
+    - "issued/{{ EASYRSA_REQ_NAME }}.crt"
+    - "ca.crt"
+  delegate_to: 127.0.0.1
+
+- name: "Add privileges 2"
+  become: yes
+  file:
+    path: "/tmp/"
+    mode: 0777
+    owner: florian
+    recurse: yes
+  delegate_to: 127.0.0.1
+
 - name: "Copy crt server openvpn"
   become: yes
   become_user: root
