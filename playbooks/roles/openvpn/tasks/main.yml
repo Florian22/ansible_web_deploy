@@ -217,11 +217,11 @@
 #      chdir: "{{ EASYRSA_CA_TOP_TREE }}"
 #      executable: /bin/bash
 ################End exec local
-- name: "Sign cert 1"
+- name: "Sign cert 2-1"
   become: yes
   local_action: "{{ EASYRSA_CA_TOP_TREE }}/easyrsa --batch import-req /tmp/client1.req client1"
     
-- name: "Sign cert 2"
+- name: "Sign cert 2-2"
   become: yes
   local_action: "{{ EASYRSA_CA_TOP_TREE }}/easyrsa  --batch sign-req client client1"
 
