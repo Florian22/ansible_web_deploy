@@ -243,6 +243,7 @@
     chdir: "{{ EASYRSA_CA_TOP_TREE }}"
     executable: /bin/bash
   delegate_to: 127.0.0.1
+  ignore_errors: True
 
 - name: "Copy crt server openvpn"
   become: yes
