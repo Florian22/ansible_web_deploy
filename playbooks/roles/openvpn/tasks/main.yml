@@ -145,12 +145,9 @@
 - name: "Add privileges"
   become: yes
   file:
-    path: "{{ EASYRSA_CA_TOP_TREE }}/pki/{{ item }}"
+    path: "{{ EASYRSA_CA_TOP_TREE }}/pki/"
     mode: 0777
-    owner: florian
-  with_items:
-    - "issued/{{ EASYRSA_REQ_NAME }}.crt"
-    - "ca.crt"
+    recurse: yes
   delegate_to: 127.0.0.1
 
 - name: "copy to tmp"
