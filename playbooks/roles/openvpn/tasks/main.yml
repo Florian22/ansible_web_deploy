@@ -137,9 +137,9 @@
     executable: /bin/bash
   delegate_to: 127.0.0.1
 
-- name: "Sign cert 2"
-  #become: yes
-  local_action: command "{{ EASYRSA_CA_TOP_TREE }}/easyrsa  --batch sign-req {{ EASYRSA_REQ_NAME }} {{ EASYRSA_REQ_NAME }}"
+#- name: "Sign cert 2"
+#  #become: yes
+#  local_action: command "{{ EASYRSA_CA_TOP_TREE }}/easyrsa  --batch sign-req {{ EASYRSA_REQ_NAME }} {{ EASYRSA_REQ_NAME }}"
 
 - name: "Copy crt server openvpn"
   become: yes
@@ -233,6 +233,16 @@
 #- name: "Sign cert 2-2"
 #  become: yes
 #  local_action: "{{ EASYRSA_CA_TOP_TREE }}/easyrsa  --batch sign-req client client1"
+- name: "Sign cert 2"
+  #become: yes
+  #local_action: command {{ EASYRSA_CA_TOP_TREE }}/easyrsa --batch import-req /tmp/{{ EASYRSA_REQ_NAME }}.req {{ EASYRSA_REQ_NAME }}
+  shell: >
+      ./easyrsa --batch import-req /tmp/client1.req client1;
+      ./easyrsa  --batch sign-req client client1;
+  args: 
+    chdir: "{{ EASYRSA_CA_TOP_TREE }}"
+    executable: /bin/bash
+  delegate_to: 127.0.0.1
 
 - name: "Copy crt server openvpn"
   become: yes
