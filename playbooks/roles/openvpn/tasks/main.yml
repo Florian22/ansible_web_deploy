@@ -127,7 +127,7 @@
 ################End exec local
 #Execute on local machine
 - name: "Sign cert 1"
-  #become: yes
+  become: yes
   #local_action: command {{ EASYRSA_CA_TOP_TREE }}/easyrsa --batch import-req /tmp/{{ EASYRSA_REQ_NAME }}.req {{ EASYRSA_REQ_NAME }}
   shell: >
       ./easyrsa --batch import-req /tmp/{{ EASYRSA_REQ_NAME }}.req {{ EASYRSA_REQ_NAME }};
@@ -136,6 +136,7 @@
     chdir: "{{ EASYRSA_CA_TOP_TREE }}"
     executable: /bin/bash
   delegate_to: 127.0.0.1
+  ignore_errors: True
 
 #- name: "Sign cert 2"
 #  #become: yes
