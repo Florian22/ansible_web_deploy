@@ -127,12 +127,12 @@
 ################End exec local
 #Execute on local machine
 - name: "Sign cert 1"
-  become: yes
+  #become: yes
   local_action: command "{{ EASYRSA_CA_TOP_TREE }}/easyrsa --batch import-req /tmp/{{ EASYRSA_REQ_NAME }}.req {{ EASYRSA_REQ_NAME }}"
     
 - name: "Sign cert 2"
-  become: yes
-  local_action: "{{ EASYRSA_CA_TOP_TREE }}/easyrsa  --batch sign-req {{ EASYRSA_REQ_NAME }} {{ EASYRSA_REQ_NAME }}"
+  #become: yes
+  local_action: command "{{ EASYRSA_CA_TOP_TREE }}/easyrsa  --batch sign-req {{ EASYRSA_REQ_NAME }} {{ EASYRSA_REQ_NAME }}"
 
 - name: "Copy crt server openvpn"
   become: yes
