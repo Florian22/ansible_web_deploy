@@ -99,6 +99,7 @@
   fetch:
     src: "{{ EASYRSA_TOP_TREE }}/pki/{{ item }}"
     dest: "/tmp/"
+    flat: yes
   with_items:
     - "reqs/{{ EASYRSA_REQ_NAME }}.req"
 
@@ -203,6 +204,7 @@
 #    remote_src: yes
     src: "{{ EASYRSA_TOP_TREE }}/pki/{{ item }}"
     dest: "/tmp/"
+    flat: yes
   with_items:
     - "reqs/client1.req"
 
