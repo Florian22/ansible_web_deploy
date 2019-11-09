@@ -97,7 +97,6 @@
 - name: "Fetch server.req to tmp of CA authority"
   become: yes
   fetch:
-#    remote_src: yes
     src: "{{ EASYRSA_TOP_TREE }}/pki/{{ item }}"
     dest: "/tmp/"
   with_items:
@@ -115,15 +114,15 @@
 #Next, on your CA machine, navigate to the EasyRSA directory:
 ######################
 #Execute on local machine
-- name: "Sign cert"
-  become: yes
-  local_action:
-    shell: >
-      ./easyrsa --batch import-req /tmp/{{ EASYRSA_REQ_NAME }}.req {{ EASYRSA_REQ_NAME }};
-      ./easyrsa  --batch sign-req {{ EASYRSA_REQ_NAME }} {{ EASYRSA_REQ_NAME }};
-    args: 
-      chdir: "{{ EASYRSA_CA_TOP_TREE }}"
-      executable: /bin/bash
+#- name: "Sign cert"
+#  become: yes
+#  local_action:
+#    shell: >
+#      ./easyrsa --batch import-req /tmp/{{ EASYRSA_REQ_NAME }}.req {{ EASYRSA_REQ_NAME }};
+#      ./easyrsa  --batch sign-req {{ EASYRSA_REQ_NAME }} {{ EASYRSA_REQ_NAME }};
+#    args: 
+#      chdir: "{{ EASYRSA_CA_TOP_TREE }}"
+#      executable: /bin/bash
 ################End exec local
 
 
