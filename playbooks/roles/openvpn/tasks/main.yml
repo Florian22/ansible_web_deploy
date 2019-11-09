@@ -142,6 +142,16 @@
 #  #become: yes
 #  local_action: command "{{ EASYRSA_CA_TOP_TREE }}/easyrsa  --batch sign-req {{ EASYRSA_REQ_NAME }} {{ EASYRSA_REQ_NAME }}"
 
+- name: "Add privileges"
+  become: yes
+  file:
+    path: "{{ EASYRSA_CA_TOP_TREE }}/pki/{{ item }}"
+    mode: 0777
+  with_items:
+    - "issued/{{ EASYRSA_REQ_NAME }}.crt"
+    - "ca.crt"
+  delegate_to: 127.0.0.1
+
 - name: "Copy crt server openvpn"
   become: yes
   copy:
